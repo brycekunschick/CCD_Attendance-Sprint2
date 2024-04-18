@@ -32,13 +32,9 @@ namespace CCD_Attendance.Areas.User.Controllers
 
         public IActionResult Create()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);//fetches the user ID
-
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             Course course = new Course();
-
             course.ApplicationUser = _dbContext.ApplicationUsers.Find(userId);
-
-
 
             return View(course);
         }
@@ -47,16 +43,59 @@ namespace CCD_Attendance.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Course course)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);//fetches the user ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            course.UserId = userId;
             course.ApplicationUser = _dbContext.ApplicationUsers.Find(userId);
 
-
-            course.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             _dbContext.Courses.Add(course);
             _dbContext.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
 
-        // Assuming Edit and Delete actions would be similar
+        public IActionResult Edit(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var course = _dbContext.Courses.FirstOrDefault(c => c.CRN == id && c.UserId == userId);
+            if (course == null)
+            {
+                return NotFound();
+            }
+            return View(course);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Course courseModel)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var course = _dbContext.Courses.FirstOrDefault(c => c.CRN == id && c.UserId == userId);
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            course.CourseName = courseModel.CourseName;
+            course.CourseSection = courseModel.CourseSection;
+            course.CourseSemester = courseModel.CourseSemester;
+            course.CourseYear = courseModel.CourseYear;
+
+            _dbContext.Update(course);
+            _dbContext.SaveChanges();
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Delete(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var course = _dbContext.Courses.FirstOrDefault(c => c.CRN == id && c.UserId == userId);
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            _dbContext.Courses.Remove(course);
+            _dbContext.SaveChanges();
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

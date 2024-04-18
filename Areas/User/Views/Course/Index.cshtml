@@ -4,30 +4,36 @@
     ViewData["Title"] = "Courses";
 }
 
-<h1>Courses</h1>
+<h1>My Courses</h1>
 <a href="@Url.Action("Create", "Course")" class="btn btn-primary">Add New Course</a>
-<table class="table">
-    <thead>
-        <tr>
-            <th>CRN</th>
-            <th>Course Name</th>
-            <th>Section</th>
-            <th>Semester</th>
-            <th>Year</th>
-            <th>Professor</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var course in Model)
-        {
+
+<div class="pt-2 pb-2">
+    <table class="table table-bordered table-striped">
+        <thead>
             <tr>
-                <td>@course.CRN</td>
-                <td>@course.CourseName</td>
-                <td>@course.CourseSection</td>
-                <td>@course.CourseSemester</td>
-                <td>@course.CourseYear</td>
-                <td>@course.ApplicationUser?.UserName</td>
+                <th>CRN</th>
+                <th>Course Name</th>
+                <th>Section</th>
+                <th>Semester</th>
+                <th>Year</th>
+                <th class="text-center">Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var course in Model)
+            {
+                <tr>
+                    <td>@course.CRN</td>
+                    <td>@course.CourseName</td>
+                    <td>@course.CourseSection</td>
+                    <td>@course.CourseSemester</td>
+                    <td>@course.CourseYear</td>
+                    <td class="text-center">
+                        <a href="@Url.Action("Edit", "Course", new { id = course.CRN })" class="btn btn-sm btn-secondary">Edit</a>
+                        <a href="javascript:void(0)" onclick="if (confirm('Remove this course?')) { window.location.href='@Url.Action("Delete", "Course", new { id = course.CRN })'; }" class="btn btn-sm btn-danger">Remove</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
