@@ -1,0 +1,37 @@
+﻿@model IEnumerable<CCD_Attendance.Models.Event>
+
+@{
+    ViewData["Title"] = "Events";
+}
+
+<h1>Events</h1>
+<a href="@Url.Action("Create", "Event")" class="btn btn-primary">Add New Event</a>
+
+<div class="pt-2 pb-2">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Event Name</th>
+                <th>Date</th>
+                <th>Details</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @* @foreach (var event in Model) *@
+
+            @foreach(var item in Model)
+            {
+            <tr>
+                    <td>@item.EventName</td>
+                    <td>@item.EventDate</td>
+                    <td>@item.EventDetails</td>
+                <td class="text-center">
+                        <a href="@Url.Action("Edit", "Event", new { id = item.EventID })" class="btn btn-sm btn-secondary">Edit</a>
+                        <a href="javascript:void(0)" onclick="if (confirm('Remove this event?')) { window.location.href='@Url.Action("Delete", "Event", new { id = item.EventID })'; }" class="btn btn-sm btn-danger">Remove</a>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

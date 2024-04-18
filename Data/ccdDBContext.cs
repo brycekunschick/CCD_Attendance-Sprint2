@@ -18,6 +18,8 @@ namespace CCD_Attendance.Data
 
         public DbSet<Course> Courses { get; set; }
 
+        public DbSet<Event> Events { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
