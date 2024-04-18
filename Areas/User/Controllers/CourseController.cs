@@ -25,6 +25,10 @@ namespace CCD_Attendance.Areas.User.Controllers
             var courses = _dbContext.Courses
                 .Where(c => c.UserId == userId)
                 .Include(c => c.ApplicationUser)
+                .OrderByDescending(c => c.CourseYear) // Sort by Year descending
+                .ThenBy(c => c.CourseSemester)         // Then by Semester alphabetically
+                .ThenBy(c => c.CourseName)             // Then by Course Name alphabetically
+                .ThenBy(c => c.CRN)                    // Then by CRN
                 .ToList();
 
             return View(courses);
@@ -46,6 +50,12 @@ namespace CCD_Attendance.Areas.User.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             course.UserId = userId;
             course.ApplicationUser = _dbContext.ApplicationUsers.Find(userId);
+
+            if (_dbContext.Courses.Any(c => c.CRN == course.CRN))
+            {
+                ModelState.AddModelError("CRN", "A course with this CRN already exists.");
+                return View(course); // Return here to show the error in the view
+            }
 
             _dbContext.Courses.Add(course);
             _dbContext.SaveChanges();
@@ -72,6 +82,12 @@ namespace CCD_Attendance.Areas.User.Controllers
             if (course == null)
             {
                 return NotFound();
+            }
+
+            if (_dbContext.Courses.Any(c => c.CRN == courseModel.CRN && c.CRN != id))
+            {
+                ModelState.AddModelError("CRN", "Another course with this CRN already exists.");
+                return View(courseModel); // Return here to show the error in the view
             }
 
             course.CourseName = courseModel.CourseName;
