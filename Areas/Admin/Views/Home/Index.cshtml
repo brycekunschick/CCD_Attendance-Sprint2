@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    string firstName = ViewData["FirstName"] as string;
+    string lastName = ViewData["LastName"] as string;
+}
+
+<div class="text-center">
+    <h1 class="display-7">@firstName @lastName (Admin)</h1>
+    <p>Select an option:</p>
+
+    <div class="mt-4" role="group" aria-label="User Actions">
+        <a class="btn btn-primary btn-lg me-2" href="~/Admin/Home/Index" role="button">Events</a>
+        <a class="btn btn-primary btn-lg mx-2" href="~/Admin/User/Index" role="button">Users</a>
+        <a class="btn btn-primary btn-lg mx-2" href="~/Admin/Employee/Index" role="button">Employees</a>
+    </div>
+</div>

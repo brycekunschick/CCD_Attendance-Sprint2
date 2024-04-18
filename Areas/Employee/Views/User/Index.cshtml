@@ -1,0 +1,54 @@
+﻿@model CCD_Attendance.Areas.Employee.Models.UsersViewModel
+
+<h1>User Management</h1>
+
+<div class="pt-2 pb-2">
+    <h2>Requested Accounts</h2>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.RequestedUsers)
+            {
+                <tr>
+                    <td>@user.Email</td>
+                    <td>@user.FirstName @user.LastName</td>
+                    <td class="text-center">
+                        <a href="javascript:void(0)" onclick="if (confirm('Approve User?')) { window.location.href='@Url.Action("Approve", "User", new { area = "Employee", userId = user.Id })'; }" class="btn btn-sm btn-success">Approve</a>
+                        <a href="javascript:void(0)" onclick="if (confirm('Deny and delete User?')) { window.location.href='@Url.Action("Deny", "User", new { area = "Employee", userId = user.Id })'; }" class="btn btn-sm btn-danger">Deny</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="pt-2 pb-2">
+    <h2>Current Users</h2>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.RegularUsers)
+            {
+                <tr>
+                    <td>@user.Email</td>
+                    <td>@user.FirstName @user.LastName</td>
+                    <td class="text-center">
+                        <a href="javascript:void(0)" onclick="if (confirm('Remove and delete User?')) { window.location.href='@Url.Action("Delete", "User", new { area = "Employee", userId = user.Id })'; }" class="btn btn-sm btn-danger">Remove</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

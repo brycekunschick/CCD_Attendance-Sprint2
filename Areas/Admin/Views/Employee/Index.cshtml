@@ -1,0 +1,28 @@
+﻿@model List<CCD_Attendance.Areas.Admin.Models.UserViewModel>
+
+<h1>Employee Management</h1>
+
+<div class="pt-2 pb-2">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model)
+            {
+                <tr>
+                    <td>@employee.Email</td>
+                    <td>@employee.FirstName @employee.LastName</td>
+                    <td class="text-center">
+                        <a href="javascript:void(0)" onclick="if (confirm('Demote Employee to User?')) { window.location.href='@Url.Action("Demote", "Employee", new { area = "Admin", userId = employee.Id })'; }" class="btn btn-sm btn-outline-danger">Demote</a>
+                        <a href="javascript:void(0)" onclick="if (confirm('Remove Employee?')) { window.location.href='@Url.Action("Remove", "Employee", new { area = "Admin", userId = employee.Id })'; }" class="btn btn-sm btn-danger">Remove</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

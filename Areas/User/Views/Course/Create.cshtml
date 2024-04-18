@@ -1,0 +1,58 @@
+﻿@model CCD_Attendance.Models.Course
+
+@{
+    ViewData["Title"] = "Add New Course";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="CRN" class="control-label"></label>
+        <input asp-for="CRN" class="form-control" />
+        <span asp-validation-for="CRN" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CourseName" class="control-label"></label>
+        <input asp-for="CourseName" class="form-control" />
+        <span asp-validation-for="CourseName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CourseSection" class="control-label"></label>
+        <input asp-for="CourseSection" class="form-control" />
+        <span asp-validation-for="CourseSection" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CourseSemester" class="control-label"></label>
+        <select asp-for="CourseSemester" class="form-control">
+            <option value="Fall">Fall</option>
+            <option value="Spring">Spring</option>
+            <option value="Summer">Summer</option>
+            <option value="Winter">Winter</option>
+        </select>
+        <span asp-validation-for="CourseSemester" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CourseYear" class="control-label"></label>
+        <select asp-for="CourseYear" class="form-control">
+            @{
+                int currentYear = DateTime.Now.Year;
+                for (int year = currentYear - 1; year <= currentYear + 3; year++)
+                {
+                    <option value="@year">@year</option>
+                }
+            }
+        </select>
+        <span asp-validation-for="CourseYear" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
