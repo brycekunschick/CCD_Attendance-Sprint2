@@ -1,0 +1,115 @@
+﻿@model IEnumerable<CCD_Attendance.Models.Event>
+
+@{
+    ViewData["Title"] = "All Events";
+    var approvedEvents = ViewBag.ApprovedEvents as IEnumerable<CCD_Attendance.Models.Event>;
+}
+
+<h1 style="margin-bottom: 30px">@ViewData["Title"]</h1>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2>Event Requests</h2>
+    <input type="text" id="searchRequests" onkeyup="searchTable('searchRequests', 'eventRequestsTable')" placeholder="Search event requests..." style="width: 30%; padding: 8px;">
+</div>
+
+<table class="table table-bordered" id="eventRequestsTable" style="margin-bottom: 40px">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Details</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.EventId</td>
+                <td>@item.EventName</td>
+                <td>@item.EventDate.ToString("yyyy-MM-dd")</td>
+                <td>@item.EventDetails</td>
+                <td>
+                    <a href="javascript:void(0);" onclick="return confirmApprove('@Url.Action("Approve", "Event", new { id = item.EventId })');" class="btn btn-success">Approve</a>
+                    <a href="javascript:void(0);" onclick="return confirmDeny('@Url.Action("Deny", "Event", new { id = item.EventId })');" class="btn btn-danger">Deny</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2>Approved Events</h2>
+    <input type="text" id="searchApproved" onkeyup="searchTable('searchApproved', 'approvedEventsTable')" placeholder="Search approved events..." style="width: 30%; padding: 8px;">
+</div>
+
+<table class="table table-bordered" id="approvedEventsTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Details</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in approvedEvents)
+        {
+            <tr>
+                <td>@item.EventId</td>
+                <td>@item.EventName</td>
+                <td>@item.EventDate.ToString("yyyy-MM-dd")</td>
+                <td>@item.EventDetails</td>
+                <td>
+                    <a href="@Url.Action("Edit", "Event", new { id = item.EventId, returnUrl = Url.Action("AllEvents", "Event") })" class="btn btn-secondary">Edit</a>
+                    <a href="javascript:void(0);" onclick="return confirmDelete('@Url.Action("Delete", "Event", new { id = item.EventId })');" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function confirmDelete(url) {
+            if (confirm('Delete this event?')) {
+                window.location.href = url;
+            }
+            return false;
+        }
+
+        function confirmDeny(url) {
+            if (confirm('Deny this event?')) {
+                window.location.href = url;
+            }
+            return false;
+        }
+
+        function confirmApprove(url) {
+            if (confirm('Approve this event?')) {
+                window.location.href = url;
+            }
+            return false;
+        }
+
+        function searchTable(inputId, tableId) {
+            var input = document.getElementById(inputId);
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById(tableId);
+            var tr = table.getElementsByTagName("tr");
+            for (var i = 0; i < tr.length; i++) {
+                var tds = tr[i].getElementsByTagName("td");
+                var found = false;
+                for (var j = 0; j < tds.length; j++) {
+                    if (tds[j].textContent.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+                tr[i].style.display = found ? "" : "none";
+            }
+        }
+    </script>
+}

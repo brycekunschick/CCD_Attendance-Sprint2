@@ -1,0 +1,11 @@
+﻿@{
+    ViewData["Title"] = "Events";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="mt-4" role="group" aria-label="Event Actions">
+    <a class="btn btn-secondary" style="margin-right: 5px" href="@Url.Action("Create", "Event")">Create Event</a>
+    <a class="btn btn-primary" style="margin-right: 5px" href="@Url.Action("MyEvents", "Event")">My Events</a>
+    <a class="btn btn-primary" style="margin-right: 5px" href="@Url.Action("AllEvents", "Event")">All Events</a>
+</div>

@@ -9,12 +9,13 @@ namespace CCD_Attendance.Models
     {
         public int EventId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Event name is required")]
         public string EventName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Event date is required")]
         public DateTime EventDate { get; set; }
 
+        [Required(ErrorMessage = "Details are required")]
         public string EventDetails { get; set; }
 
         public string? EventNotesCCD { get; set; }

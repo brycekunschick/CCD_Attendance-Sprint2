@@ -1,0 +1,68 @@
+﻿@model IEnumerable<CCD_Attendance.Models.Event>
+
+@{
+    ViewData["Title"] = "My Events";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <a href="@Url.Action("Create", "Event")" class="btn btn-primary" style="margin-bottom: 10px;">Add Event</a>
+    <input type="text" id="search" onkeyup="searchTable()" placeholder="Search my events..." style="margin-bottom: 20px; width: 30%; padding: 8px;">
+</div>
+
+<table class="table table-bordered" id="myEventsTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Details</th>
+            <th>CCD Notes</th>
+            <th class="text-center">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.EventId</td>
+                <td>@item.EventName</td>
+                <td>@item.EventDate.ToString("yyyy-MM-dd")</td>
+                <td>@item.EventDetails</td>
+                <td>@item.EventNotesCCD</td>
+                <td class="text-center">
+                    <a href="@Url.Action("EditMyEvents", "Event", new { id = item.EventId, returnUrl = Url.Action("MyEvents", "Event") })" class="btn btn-secondary">Edit</a>
+                    <a href="javascript:void(0)" onclick="return confirmDeletion('@Url.Action("DeleteMyEvents", "Event", new { id = item.EventId })');" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function confirmDeletion(url) {
+            if (confirm('Delete this event?')) {
+                window.location.href = url;
+            }
+            return false;
+        }
+
+        function searchTable() {
+            var input = document.getElementById("search");
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById("myEventsTable");
+            var tr = table.getElementsByTagName("tr");
+            for (var i = 0; i < tr.length; i++) {
+                var td = tr[i].getElementsByTagName("td");
+                var tdsText = "";
+                for (var j = 0; j < td.length; j++) {
+                    var txtValue = td[j].textContent || td[j].innerText;
+                    tdsText += txtValue;
+                }
+                tr[i].style.display = tdsText.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+            }
+        }
+    </script>
+}

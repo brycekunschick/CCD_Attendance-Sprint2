@@ -21,7 +21,7 @@ namespace CCD_Attendance.Areas.User.Controllers
 
         public IActionResult Index()
         {
-            // This view now acts as a dashboard to navigate to other views
+            // This view acts as a dashboard to navigate to other views
             return View();
         }
 
@@ -55,7 +55,7 @@ namespace CCD_Attendance.Areas.User.Controllers
                 .OrderByDescending(e => e.EventDate)
                 .ToList();
 
-            return View(events); // Reuse the MyEvents view for this purpose
+            return View(events);
         }
 
         public IActionResult Create()
