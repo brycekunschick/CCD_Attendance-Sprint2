@@ -61,14 +61,17 @@ namespace CCD_Attendance.Migrations
 
             modelBuilder.Entity("CCD_Attendance.Models.Event", b =>
                 {
-                    b.Property<int>("EventID")
+                    b.Property<int>("EventId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventId"));
 
-                    b.Property<DateOnly>("EventDate")
-                        .HasColumnType("date");
+                    b.Property<bool>("ApprovalStatus")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("EventDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("EventDetails")
                         .IsRequired()
@@ -78,7 +81,16 @@ namespace CCD_Attendance.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("EventID");
+                    b.Property<string>("EventNotesCCD")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("EventId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Events");
                 });
@@ -310,6 +322,17 @@ namespace CCD_Attendance.Migrations
                 });
 
             modelBuilder.Entity("CCD_Attendance.Models.Course", b =>
+                {
+                    b.HasOne("CCD_Attendance.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("CCD_Attendance.Models.Event", b =>
                 {
                     b.HasOne("CCD_Attendance.ApplicationUser", "ApplicationUser")
                         .WithMany()

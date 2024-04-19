@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Event Dashboard";
+}
+
+<h2>Events</h2>
+
+<div class="mt-4" role="group" aria-label="Event Actions">
+    <a class="btn btn-primary btn-lg me-2" href="@Url.Action("MyEvents", "Event")" role="button">My Events</a>
+    <a class="btn btn-primary btn-lg me-2" href="@Url.Action("AllEvents", "Event")" role="button">All Events</a>
+</div>
+<br />
+<h2>Requests</h2>
+
+<div class="mt-4" role="group" aria-label="Request Actions">
+    <a class="btn btn-primary btn-lg me-2" href="@Url.Action("Create", "Event")" role="button">Request Event</a>
+    <a class="btn btn-primary btn-lg me-2" href="@Url.Action("MyRequests", "Event")" role="button">My Requests</a>
+</div>
