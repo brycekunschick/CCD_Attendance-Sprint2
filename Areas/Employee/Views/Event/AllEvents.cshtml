@@ -51,6 +51,7 @@
             <th>Name</th>
             <th>Date</th>
             <th>Details</th>
+            <th>CCD Notes</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -62,6 +63,7 @@
                 <td>@item.EventName</td>
                 <td>@item.EventDate.ToString("yyyy-MM-dd")</td>
                 <td>@item.EventDetails</td>
+                <td>@item.EventNotesCCD</td>
                 <td>
                     <a href="@Url.Action("Edit", "Event", new { id = item.EventId, returnUrl = Url.Action("AllEvents", "Event") })" class="btn btn-secondary">Edit</a>
                     <a href="javascript:void(0);" onclick="return confirmDelete('@Url.Action("Delete", "Event", new { id = item.EventId })');" class="btn btn-danger">Delete</a>
