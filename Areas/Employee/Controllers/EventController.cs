@@ -191,5 +191,22 @@ namespace CCD_Attendance.Areas.Employee.Controllers
             }
             return RedirectToAction(nameof(MyEvents));
         }
+
+        public IActionResult AddUpdateAttendance()
+        {
+            var approvedEvents = _dbContext.Events
+                .Where(e => e.ApprovalStatus)
+                .OrderByDescending(e => e.EventDate)
+                .ToList();
+
+            return View(approvedEvents);
+        }
+
+
+
+
+
+
+
     }
 }
