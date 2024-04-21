@@ -1,39 +1,61 @@
-﻿@model IEnumerable<CCD_Attendance.Models.Course>
+﻿@model IEnumerable<CCD_Attendance.Models.CourseViewModel>
 
 @{
     ViewData["Title"] = "Courses";
 }
 
 <h1>My Courses</h1>
-<a href="@Url.Action("Create", "Course")" class="btn btn-primary">Add New Course</a>
+<a href="@Url.Action("Create", "Course")" class="btn btn-primary" style="margin-bottom: 10px">Add New Course</a>
 
-<div class="pt-2 pb-2">
-    <table class="table table-bordered table-striped">
-        <thead>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>CRN</th>
+            <th>Course Name</th>
+            <th>Section</th>
+            <th>Semester</th>
+            <th>Year</th>
+            <th>Roster</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var course in Model)
+        {
             <tr>
-                <th>CRN</th>
-                <th>Course Name</th>
-                <th>Section</th>
-                <th>Semester</th>
-                <th>Year</th>
-                <th class="text-center">Actions</th>
+                <td>@course.CRN</td>
+                <td>@course.CourseName</td>
+                <td>@course.CourseSection</td>
+                <td>@course.CourseSemester</td>
+                <td>@course.CourseYear</td>
+                <td class="text-center">
+                    @if (course.HasRoster)
+                    {
+                        <a class="btn btn-sm btn-outline-secondary" href="@Url.Action("UpdateRoster", "Course", new { courseId = course.CourseId })">Update</a>
+                        <button class="btn btn-sm btn-outline-danger" onclick="return confirmDelete('@course.CourseId')">Delete</button>
+                    }
+                    else
+                    {
+                        <a class="btn btn-sm btn-secondary" href="@Url.Action("UploadRoster", "Course", new { courseId = course.CourseId })">Add</a>
+                    }
+                </td>
+                <td class="text-center">
+                    <a href="@Url.Action("Edit", "Course", new { id = course.CRN })" class="btn btn-sm btn-secondary">Edit</a>
+                    <a href="javascript:void(0)" onclick="if (confirm('Remove this course?')) { window.location.href='@Url.Action("Delete", "Course", new { id = course.CRN })'; }" class="btn btn-sm btn-danger">Remove</a>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var course in Model)
-            {
-                <tr>
-                    <td>@course.CRN</td>
-                    <td>@course.CourseName</td>
-                    <td>@course.CourseSection</td>
-                    <td>@course.CourseSemester</td>
-                    <td>@course.CourseYear</td>
-                    <td class="text-center">
-                        <a href="@Url.Action("Edit", "Course", new { id = course.CRN })" class="btn btn-sm btn-secondary">Edit</a>
-                        <a href="javascript:void(0)" onclick="if (confirm('Remove this course?')) { window.location.href='@Url.Action("Delete", "Course", new { id = course.CRN })'; }" class="btn btn-sm btn-danger">Remove</a>
-                    </td>
-                </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function confirmDelete(courseId) {
+            if (confirm('Delete roster information for this course?')) {
+                window.location.href = '@Url.Action("DeleteRoster", "Course")' + '?courseId=' + courseId;
             }
-        </tbody>
-    </table>
-</div>
+            return false;
+        }
+    </script>
+}
+

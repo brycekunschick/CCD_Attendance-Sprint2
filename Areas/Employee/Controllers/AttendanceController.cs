@@ -187,7 +187,7 @@ namespace CCD_Attendance.Areas.Employee.Controllers
             var attendances = _dbContext.Attendances.Where(a => a.EventId == eventId);
             _dbContext.Attendances.RemoveRange(attendances);
             await _dbContext.SaveChangesAsync();
-            return RedirectToAction("AddUpdateAttendance", "Event");  // Or return a JSON result if using AJAX
+            return RedirectToAction("AddUpdateAttendance", "Event");  
         }
 
 

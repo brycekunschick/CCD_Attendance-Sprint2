@@ -23,6 +23,8 @@ namespace CCD_Attendance.Data
         public DbSet<Student> Students { get; set; }
         public DbSet<Attendance> Attendances { get; set; }
 
+        public DbSet<CourseStudent> CourseStudents { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 

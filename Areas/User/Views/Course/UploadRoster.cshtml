@@ -1,19 +1,20 @@
-﻿@model CCD_Attendance.Models.UploadAttendanceViewModel
+﻿@model CCD_Attendance.Models.UploadRosterViewModel
+
 @{
-    ViewData["Title"] = "Upload Attendance";
+    ViewData["Title"] = "Upload Roster";
 }
 
 <h1>@ViewData["Title"]</h1>
 
-<form asp-action="Upload" asp-controller="Attendance" asp-area="Employee" method="post" enctype="multipart/form-data">
+<form asp-action="UploadRoster" asp-controller="Course" asp-area="User" method="post" enctype="multipart/form-data">
     <div class="form-group">
-        <label asp-for="File">Attendance File</label>
+        <label asp-for="File">Roster File</label>
         <input asp-for="File" class="form-control" type="file" required />
         <span asp-validation-for="File" class="text-danger"></span>
     </div>
     <div>
         <p>Provide a CSV file for Handshake data in the correct format.</p>
     </div>
-    <input asp-for="EventId" type="hidden" />
+    <input asp-for="CourseId" type="hidden" />
     <button type="submit" class="btn btn-primary">Upload</button>
 </form>

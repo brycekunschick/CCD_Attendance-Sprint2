@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace CCD_Attendance.Areas.User.Controllers
 {
@@ -25,14 +27,25 @@ namespace CCD_Attendance.Areas.User.Controllers
             var courses = _dbContext.Courses
                 .Where(c => c.UserId == userId)
                 .Include(c => c.ApplicationUser)
-                .OrderByDescending(c => c.CourseYear) // Sort by Year descending
-                .ThenBy(c => c.CourseSemester)         // Then by Semester alphabetically
-                .ThenBy(c => c.CourseName)             // Then by Course Name alphabetically
-                .ThenBy(c => c.CRN)                    // Then by CRN
+                .Select(course => new CourseViewModel
+                {
+                    CourseId = course.CourseId,
+                    CRN = course.CRN,
+                    CourseName = course.CourseName,
+                    CourseSection = course.CourseSection,
+                    CourseSemester = course.CourseSemester,
+                    CourseYear = course.CourseYear,
+                    HasRoster = _dbContext.CourseStudents.Any(cs => cs.CourseId == course.CourseId)
+                })
+                .OrderByDescending(c => c.CourseYear)
+                .ThenBy(c => c.CourseSemester)
+                .ThenBy(c => c.CourseName)
+                .ThenBy(c => c.CRN)
                 .ToList();
 
             return View(courses);
         }
+
 
         public IActionResult Create()
         {
@@ -113,5 +126,165 @@ namespace CCD_Attendance.Areas.User.Controllers
             _dbContext.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
+
+
+        //Roster actions
+
+        [HttpGet]
+        public IActionResult UploadRoster(int courseId)
+        {
+            var model = new UploadRosterViewModel
+            {
+                CourseId = courseId
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadRoster(UploadRosterViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            if (model.File == null || model.File.Length == 0)
+            {
+                ModelState.AddModelError("File", "Please upload a file.");
+                return View(model);
+            }
+
+            using (var stream = new StreamReader(model.File.OpenReadStream()))
+            {
+                string headerLine = await stream.ReadLineAsync();
+                var headers = headerLine.Split(',');
+                if (headers.Length != 3 || headers[2].Trim() != "Email Address")
+                {
+                    ModelState.AddModelError("File", "Incorrect CSV format.");
+                    return View(model);
+                }
+
+                while (!stream.EndOfStream)
+                {
+                    var line = await stream.ReadLineAsync();
+                    var data = line.Split(',');
+
+                    var email = data[2].Trim();
+                    var username = email.Substring(0, email.IndexOf('@'));
+
+                    var student = _dbContext.Students.FirstOrDefault(s => s.Username == username);
+                    if (student == null)
+                    {
+                        student = new Student
+                        {
+                            FirstName = data[0].Trim(),
+                            LastName = data[1].Trim(),
+                            Username = username
+                        };
+                        _dbContext.Students.Add(student);
+                        await _dbContext.SaveChangesAsync();
+                    }
+
+                    var courseStudent = new CourseStudent
+                    {
+                        StudentId = student.StudentId,
+                        CourseId = model.CourseId
+                    };
+                    _dbContext.CourseStudents.Add(courseStudent);
+                }
+                await _dbContext.SaveChangesAsync();
+            }
+            return RedirectToAction("Index");
+        }
+
+
+
+        [HttpGet]
+        public IActionResult UpdateRoster(int courseId)
+        {
+            var model = new UploadRosterViewModel
+            {
+                CourseId = courseId
+            };
+            return View("UploadRoster", model);  // Reusing the UploadRoster view for updates
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateRoster(UploadRosterViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("UploadRoster", model);
+            }
+
+            if (model.File == null || model.File.Length == 0)
+            {
+                ModelState.AddModelError("File", "Please upload a file.");
+                return View("UploadRoster", model);
+            }
+
+            var students = new List<Student>();
+            var courseStudents = new List<CourseStudent>();
+
+            using (var stream = new StreamReader(model.File.OpenReadStream()))
+            {
+                string headerLine = await stream.ReadLineAsync();
+                var headers = headerLine.Split(',');
+                if (headers.Length != 3 || headers[2].Trim() != "Email Address")
+                {
+                    ModelState.AddModelError("File", "Incorrect CSV format.");
+                    return View("UploadRoster", model);
+                }
+
+                // Remove existing course-student links before adding new ones
+                var existingCourseStudents = _dbContext.CourseStudents.Where(cs => cs.CourseId == model.CourseId);
+                _dbContext.CourseStudents.RemoveRange(existingCourseStudents);
+                await _dbContext.SaveChangesAsync();
+
+                while (!stream.EndOfStream)
+                {
+                    var line = await stream.ReadLineAsync();
+                    var data = line.Split(',');
+
+                    var email = data[2].Trim();
+                    var username = email.Substring(0, email.IndexOf('@'));
+
+                    var student = _dbContext.Students.FirstOrDefault(s => s.Username == username);
+                    if (student == null)
+                    {
+                        student = new Student
+                        {
+                            FirstName = data[0].Trim(),
+                            LastName = data[1].Trim(),
+                            Username = username
+                        };
+                        _dbContext.Students.Add(student);
+                        await _dbContext.SaveChangesAsync();
+                    }
+
+                    courseStudents.Add(new CourseStudent
+                    {
+                        StudentId = student.StudentId,
+                        CourseId = model.CourseId
+                    });
+                }
+            }
+
+            _dbContext.CourseStudents.AddRange(courseStudents);
+            await _dbContext.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteRoster(int courseId)
+        {
+            var courseStudents = _dbContext.CourseStudents.Where(cs => cs.CourseId == courseId);
+            _dbContext.CourseStudents.RemoveRange(courseStudents);
+            await _dbContext.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+
+
     }
 }
