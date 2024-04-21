@@ -31,6 +31,7 @@
                 <td class="text-center">
                     @if (course.HasRoster)
                     {
+                        <a class="btn btn-sm btn-outline-primary" href="@Url.Action("ViewRoster", "Course", new { courseId = course.CourseId })">View</a>
                         <a class="btn btn-sm btn-outline-secondary" href="@Url.Action("UpdateRoster", "Course", new { courseId = course.CourseId })">Update</a>
                         <button class="btn btn-sm btn-outline-danger" onclick="return confirmDelete('@course.CourseId')">Delete</button>
                     }

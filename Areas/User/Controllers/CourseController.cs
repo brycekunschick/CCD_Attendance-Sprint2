@@ -285,6 +285,43 @@ namespace CCD_Attendance.Areas.User.Controllers
         }
 
 
+        //view a roster
+        [HttpGet]
+        public IActionResult ViewRoster(int courseId)
+        {
+            var course = _dbContext.Courses
+                .Where(c => c.CourseId == courseId)
+                .Include(c => c.ApplicationUser) // Include details of the course creator if needed
+                .FirstOrDefault();
+
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            var students = _dbContext.CourseStudents
+                .Where(cs => cs.CourseId == courseId)
+                .Include(cs => cs.Student)
+                .Select(cs => new StudentViewModel
+                {
+                    StudentId = cs.Student.StudentId,
+                    Username = cs.Student.Username,
+                    FirstName = cs.Student.FirstName,
+                    LastName = cs.Student.LastName
+                }).ToList();
+
+            var viewModel = new CourseDetailViewModel
+            {
+                Course = course,
+                Students = students
+            };
+
+            return View("ViewRoster", viewModel);
+        }
+
+
+
+
 
     }
 }
