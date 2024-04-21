@@ -1,0 +1,81 @@
+﻿@model IEnumerable<CCD_Attendance.Models.Course>
+
+@{
+    ViewData["Title"] = "Select Course";
+}
+
+<style>
+    .course-btn {
+        width: 75px; /* Set a fixed width for all buttons */
+        text-align: center; /* Center text inside the button */
+    }
+
+    .centered {
+        text-align: center; /* Center content of the td */
+    }
+
+    .header-with-search {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+
+<div class="header-with-search">
+    <h1>@ViewData["Title"]</h1>
+    <input type="text" id="searchCourses" onkeyup="searchTableCourses()" placeholder="Search courses..." style="padding: 8px; width: 30%;">
+</div>
+
+<table class="table table-bordered table-striped" id="coursesTable">
+    <thead>
+        <tr>
+            <th>CRN</th>
+            <th>Course Name</th>
+            <th>Section</th>
+            <th>Semester</th>
+            <th>Year</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var course in Model)
+        {
+            <tr>
+                <td>@course.CRN</td>
+                <td>@course.CourseName</td>
+                <td>@course.CourseSection</td>
+                <td>@course.CourseSemester</td>
+                <td>@course.CourseYear</td>
+                <td class="centered">
+                    <a class="btn btn-primary course-btn" href="@Url.Action("CourseEvents", "Attendance", new { area = "User", courseId = course.CourseId })">
+                        Select
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function searchTableCourses() {
+            var input = document.getElementById("searchCourses");
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById("coursesTable");
+            var tr = table.getElementsByTagName("tr");
+            for (var i = 1; i < tr.length; i++) {
+                var td = tr[i].getElementsByTagName("td");
+                var tdsText = "";
+                for (var j = 0; j < td.length - 1; j++) { // Exclude the last column with buttons from the search
+                    var txtValue = td[j].textContent || td[j].innerText;
+                    tdsText += txtValue;
+                }
+                if (tdsText.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+}

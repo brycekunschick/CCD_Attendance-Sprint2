@@ -1,0 +1,96 @@
+﻿@model CCD_Attendance.Models.AttendanceDetailViewModel
+@{
+    ViewData["Title"] = "View Attendance";
+}
+
+<h1 style="margin-bottom: 20px">Attendance for @Model.Event.EventName</h1>
+
+<h2>Course Details</h2>
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>CRN</th>
+        <th>Name</th>
+        <th>Section</th>
+        <th>Semester</th>
+        <th>Year</th>
+    </tr>
+    <tr>
+        <td>@Model.Course.CRN</td>
+        <td>@Model.Course.CourseName</td>
+        <td>@Model.Course.CourseSection</td>
+        <td>@Model.Course.CourseSemester</td>
+        <td>@Model.Course.CourseYear</td>
+    </tr>
+</table>
+
+<h2>Event Details</h2>
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Date</th>
+        <th>Details</th>
+    </tr>
+    <tr>
+        <td>@Model.Event.EventId</td>
+        <td>@Model.Event.EventName</td>
+        <td>@Model.Event.EventDate.ToString("yyyy-MM-dd")</td>
+        <td>@Model.Event.EventDetails</td>
+    </tr>
+</table>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+    <div>
+        <h2 style="flex-grow: 1; margin-bottom: 0; margin-right: 20px;">Students Attending</h2>
+        <a href="@Url.Action("DownloadAttendance", "Attendance", new { area = "User", courseId = Model.Course.CourseId, eventId = Model.Event.EventId })" class="btn btn-primary">DOWNLOAD</a>
+    </div>
+    <div style="min-width: 300px; display: flex; justify-content: start; align-items: center;">
+        
+        <input type="text" id="searchStudents" onkeyup="searchTableStudents()" placeholder="Search students..." style="padding: 8px; width: 100%;">
+    </div>
+</div>
+
+
+<table class="table table-bordered table-striped" id="studentsTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in Model.Students)
+        {
+            <tr>
+                <td>@student.StudentId</td>
+                <td>@student.Username</td>
+                <td>@student.FirstName</td>
+                <td>@student.LastName</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function searchTableStudents() {
+            var input = document.getElementById("searchStudents");
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById("studentsTable");
+            var tr = table.getElementsByTagName("tr");
+            for (var i = 1; i < tr.length; i++) {  // start loop from 1 to skip the header row
+                var tds = tr[i].getElementsByTagName("td");
+                var found = false;
+                for (var j = 0; j < tds.length; j++) {
+                    if (tds[j].textContent.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+                tr[i].style.display = found ? "" : "none";
+            }
+        }
+    </script>
+}

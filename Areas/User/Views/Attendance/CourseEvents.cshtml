@@ -1,0 +1,81 @@
+﻿@model IEnumerable<CCD_Attendance.Models.Event>
+@{
+    ViewData["Title"] = "Select Event for Attendance";
+    int courseId = ViewBag.CourseId;
+}
+
+<style>
+    .attendance-btn {
+        width: 75px; /* Set a fixed width for all buttons */
+        text-align: center; /* Center text inside the button */
+    }
+
+    .centered {
+        text-align: center; /* Center content of the td */
+    }
+
+    .header-with-search {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+
+<div class="header-with-search">
+    <h1>@ViewData["Title"]</h1>
+    <input type="text" id="searchEvents" onkeyup="searchTableEvents()" placeholder="Search events..." style="padding: 8px; width: 30%;">
+</div>
+
+<p>Showing all events with attendance records containing students in your courses.</p>
+
+<table class="table table-bordered table-striped" id="eventsTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Details</th>
+            <th>CCD Notes</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>@item.EventId</td>
+            <td>@item.EventName</td>
+            <td>@item.EventDate.ToString("yyyy-MM-dd")</td>
+            <td>@item.EventDetails</td>
+                <td>@item.EventNotesCCD</td>
+            <td class="centered">
+                    <a class="btn btn-primary attendance-btn" href="@Url.Action("ViewAttendance", "Attendance", new { area = "User", courseId = courseId, eventId = item.EventId })">SELECT</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function searchTableEvents() {
+            var input = document.getElementById("searchEvents");
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById("eventsTable");
+            var tr = table.getElementsByTagName("tr");
+            for (var i = 0; i < tr.length; i++) {
+                var td = tr[i].getElementsByTagName("td");
+                var tdsText = "";
+                for (var j = 0; j < td.length; j++) {
+                    var txtValue = td[j].textContent || td[j].innerText;
+                    tdsText += txtValue;
+                }
+                if (tdsText.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+}
