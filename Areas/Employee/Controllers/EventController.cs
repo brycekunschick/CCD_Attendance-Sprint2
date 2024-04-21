@@ -192,6 +192,9 @@ namespace CCD_Attendance.Areas.Employee.Controllers
             return RedirectToAction(nameof(MyEvents));
         }
 
+
+        //Attendance methods in event controller:
+
         public IActionResult AddUpdateAttendance()
         {
             var approvedEvents = _dbContext.Events
@@ -199,8 +202,24 @@ namespace CCD_Attendance.Areas.Employee.Controllers
                 .OrderByDescending(e => e.EventDate)
                 .ToList();
 
-            return View(approvedEvents);
+            var eventWithAttendance = _dbContext.Attendances
+                .Select(a => a.EventId)
+                .Distinct()
+                .ToList();
+
+            var eventList = approvedEvents.Select(e => new EventAttendanceViewModel
+            {
+                EventId = e.EventId,
+                EventName = e.EventName,
+                EventDate = e.EventDate,
+                EventDetails = e.EventDetails,
+                EventNotesCCD = e.EventNotesCCD,
+                HasAttendance = eventWithAttendance.Contains(e.EventId)
+            }).ToList();
+
+            return View(eventList);
         }
+
 
 
 
