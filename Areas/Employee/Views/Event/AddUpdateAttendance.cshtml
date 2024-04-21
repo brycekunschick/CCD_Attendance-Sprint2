@@ -49,6 +49,7 @@
                     @if (item.HasAttendance)
                     {
                         <a class="btn btn-outline-secondary attendance-btn" href="@Url.Action("UpdateAttendance", "Attendance", new { eventId = item.EventId })">UPDATE</a>
+                        <button class="btn btn-outline-danger attendance-btn" onclick="return confirmDelete('@item.EventId')">DELETE</button>
                     }
                     else
                     {
@@ -62,6 +63,15 @@
 
 @section Scripts {
     <script>
+
+        function confirmDelete(eventId) {
+            if (confirm('Delete attendance records for this event?')) {
+                window.location.href = '@Url.Action("DeleteAttendance", "Attendance")' + '?eventId=' + eventId;
+            }
+            return false;
+        }
+        
+        
         function searchTableEvents() {
             var input = document.getElementById("searchEvents");
             var filter = input.value.toUpperCase();
@@ -81,5 +91,7 @@
                 }
             }
         }
+
+        
     </script>
 }
