@@ -222,6 +222,59 @@ namespace CCD_Attendance.Areas.Employee.Controllers
 
 
 
+        public IActionResult ViewAttendance()
+        {
+            var approvedEvents = _dbContext.Events
+                .Where(e => e.ApprovalStatus)
+                .OrderByDescending(e => e.EventDate)
+                .ToList();
+
+            var eventWithAttendance = _dbContext.Attendances
+                .Select(a => a.EventId)
+                .Distinct()
+                .ToList();
+
+            var eventList = approvedEvents.Select(e => new EventAttendanceViewModel
+            {
+                EventId = e.EventId,
+                EventName = e.EventName,
+                EventDate = e.EventDate,
+                EventDetails = e.EventDetails,
+                EventNotesCCD = e.EventNotesCCD,
+                HasAttendance = eventWithAttendance.Contains(e.EventId)
+            }).ToList();
+
+            return View(eventList);
+        }
+
+
+        public IActionResult DetailViewAttendance(int eventId)
+        {
+            var eventInfo = _dbContext.Events
+                .Where(e => e.EventId == eventId)
+                .FirstOrDefault();
+
+            var attendees = _dbContext.Attendances
+                .Where(a => a.EventId == eventId)
+                .Include(a => a.Student)
+                .Select(a => new StudentViewModel
+                {
+                    StudentId = a.StudentId,
+                    Username = a.Student.Username,
+                    FirstName = a.Student.FirstName,
+                    LastName = a.Student.LastName
+                })
+                .ToList();
+
+            var viewModel = new EventDetailViewModel
+            {
+                Event = eventInfo,
+                Attendees = attendees
+            };
+
+            return View(viewModel);
+        }
+
 
 
 

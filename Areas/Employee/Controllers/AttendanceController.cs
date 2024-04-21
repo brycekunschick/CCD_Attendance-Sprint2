@@ -85,17 +85,16 @@ namespace CCD_Attendance.Areas.Employee.Controllers
                 }
             }
 
-            // Clear existing attendance records for the event
             var existingRecords = _dbContext.Attendances.Where(a => a.EventId == model.EventId);
             _dbContext.Attendances.RemoveRange(existingRecords);
             await _dbContext.SaveChangesAsync();
 
-            // Add new attendance records
             _dbContext.Attendances.AddRange(attendances);
             await _dbContext.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Event");
+            return RedirectToAction("DetailViewAttendance", "Event", new { eventId = model.EventId });
         }
+
 
 
 
@@ -124,9 +123,6 @@ namespace CCD_Attendance.Areas.Employee.Controllers
                 return View(model);
             }
 
-            // Pre-validate the CSV file before deleting any data
-            var students = new List<Student>();
-            var attendances = new List<Attendance>();
             var validationErrors = false;
 
             using (var stream = new StreamReader(model.File.OpenReadStream()))
@@ -136,11 +132,14 @@ namespace CCD_Attendance.Areas.Employee.Controllers
                 if (headers.Length != 7 || headers[2].Trim() != "Email Address" || headers[3].Trim() != "Username")
                 {
                     ModelState.AddModelError("File", "Incorrect CSV format.");
-                    validationErrors = true; // Set flag for validation errors
+                    validationErrors = true;
                 }
 
                 if (!validationErrors)
                 {
+                    var students = new List<Student>();
+                    var attendances = new List<Attendance>();
+
                     while (!stream.EndOfStream)
                     {
                         var line = await stream.ReadLineAsync();
@@ -157,29 +156,29 @@ namespace CCD_Attendance.Areas.Employee.Controllers
                                 Username = username
                             };
                             _dbContext.Students.Add(student);
-                            // Only add student here, save changes at the end if no errors
+                            // Do not save changes yet
                         }
 
                         attendances.Add(new Attendance { StudentId = student.StudentId, EventId = model.EventId });
                     }
+
+                    var existingRecords = _dbContext.Attendances.Where(a => a.EventId == model.EventId);
+                    _dbContext.Attendances.RemoveRange(existingRecords);
+                    await _dbContext.SaveChangesAsync();
+
+                    _dbContext.Attendances.AddRange(attendances);
+                    await _dbContext.SaveChangesAsync();
                 }
             }
 
             if (validationErrors)
             {
-                return View(model); // Return the view with errors, no changes made to DB
+                return View(model);
             }
 
-            // If validation passes, remove existing records and add new ones
-            var existingRecords = _dbContext.Attendances.Where(a => a.EventId == model.EventId);
-            _dbContext.Attendances.RemoveRange(existingRecords);
-            await _dbContext.SaveChangesAsync();  // Now safe to save changes
-
-            _dbContext.Attendances.AddRange(attendances);
-            await _dbContext.SaveChangesAsync();
-
-            return RedirectToAction("Index", "Event");
+            return RedirectToAction("DetailViewAttendance", "Event", new { eventId = model.EventId });
         }
+
 
 
 

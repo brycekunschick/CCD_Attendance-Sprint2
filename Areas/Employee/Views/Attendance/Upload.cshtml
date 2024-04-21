@@ -11,6 +11,9 @@
         <input asp-for="File" class="form-control" type="file" required />
         <span asp-validation-for="File" class="text-danger"></span>
     </div>
+    <div>
+        <p>Be sure to provide a CSV file for Handshake data in the correct format.</p>
+    </div>
     <input asp-for="EventId" type="hidden" />
     <button type="submit" class="btn btn-primary">Upload</button>
 </form>
