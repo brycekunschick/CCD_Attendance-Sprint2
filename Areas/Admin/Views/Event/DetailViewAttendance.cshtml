@@ -1,0 +1,74 @@
+﻿@model CCD_Attendance.Models.EventDetailViewModel
+@{
+    ViewData["Title"] = "Event Attendance Details";
+}
+
+<h1 style="margin-bottom:30px">@ViewData["Title"]</h1>
+
+<h2>Event</h2>
+<table class="table table-bordered table-striped" style="margin-bottom: 40px">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Date</th>
+        <th>Details</th>
+        <th>CCD Notes</th>
+    </tr>
+    <tr>
+        <td>@Model.Event.EventId</td>
+        <td>@Model.Event.EventName</td>
+        <td>@Model.Event.EventDate.ToString("yyyy-MM-dd")</td>
+        <td>@Model.Event.EventDetails</td>
+        <td>@Model.Event.EventNotesCCD</td>
+    </tr>
+</table>
+
+<!-- Header with search area -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2>Attendance</h2>
+    <input type="text" id="searchAttendance" onkeyup="searchTableAttendance()" placeholder="Search attendees..." style="padding: 8px; width: 30%;">
+</div>
+
+<table class="table table-bordered table-striped" id="attendanceTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var attendee in Model.Attendees)
+        {
+            <tr>
+                <td>@attendee.StudentId</td>
+                <td>@attendee.Username</td>
+                <td>@attendee.FirstName</td>
+                <td>@attendee.LastName</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function searchTableAttendance() {
+            var input = document.getElementById("searchAttendance");
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById("attendanceTable");
+            var tr = table.getElementsByTagName("tr");
+            for (var i = 1; i < tr.length; i++) {  // start loop from 1 to skip the header row
+                var tds = tr[i].getElementsByTagName("td");
+                var found = false;
+                for (var j = 0; j < tds.length; j++) {
+                    if (tds[j].textContent.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+                tr[i].style.display = found ? "" : "none";
+            }
+        }
+    </script>
+}

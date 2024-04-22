@@ -1,0 +1,97 @@
+﻿@model IEnumerable<CCD_Attendance.Models.EventAttendanceViewModel>
+@{
+    ViewData["Title"] = "Select Event for Attendance";
+}
+
+<style>
+    .attendance-btn {
+        width: 75px; /* Set a fixed width for all buttons */
+        text-align: center; /* Center text inside the button */
+    }
+
+    .centered {
+        text-align: center; /* Center content of the td */
+    }
+
+    .header-with-search {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+
+<div class="header-with-search">
+    <h1>@ViewData["Title"]</h1>
+    <input type="text" id="searchEvents" onkeyup="searchTableEvents()" placeholder="Search events..." style="padding: 8px; width: 30%;">
+</div>
+
+<table class="table table-bordered table-striped" id="eventsTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Details</th>
+            <th>CCD Notes</th>
+            <th>Attendance</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.EventId</td>
+                <td>@item.EventName</td>
+                <td>@item.EventDate.ToString("yyyy-MM-dd")</td>
+                <td>@item.EventDetails</td>
+                <td>@item.EventNotesCCD</td>
+                <td class="centered">
+                    @if (item.HasAttendance)
+                    {
+                        <a class="btn btn-outline-secondary attendance-btn" href="@Url.Action("UpdateAttendance", "Attendance", new { eventId = item.EventId })">UPDATE</a>
+                        <button class="btn btn-outline-danger attendance-btn" onclick="return confirmDelete('@item.EventId')">DELETE</button>
+                    }
+                    else
+                    {
+                        <a class="btn btn-secondary attendance-btn" href="@Url.Action("Upload", "Attendance", new { eventId = item.EventId })">ADD</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+
+        function confirmDelete(eventId) {
+            if (confirm('Delete attendance records for this event?')) {
+                window.location.href = '@Url.Action("DeleteAttendance", "Attendance")' + '?eventId=' + eventId;
+            }
+            return false;
+        }
+        
+        
+        function searchTableEvents() {
+            var input = document.getElementById("searchEvents");
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById("eventsTable");
+            var tr = table.getElementsByTagName("tr");
+            for (var i = 0; i < tr.length; i++) {
+                var td = tr[i].getElementsByTagName("td");
+                var tdsText = "";
+                for (var j = 0; j < td.length; j++) {
+                    var txtValue = td[j].textContent || td[j].innerText;
+                    tdsText += txtValue;
+                }
+                if (tdsText.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+
+        
+    </script>
+}

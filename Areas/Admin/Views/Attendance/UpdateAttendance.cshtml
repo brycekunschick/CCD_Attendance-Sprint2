@@ -1,0 +1,25 @@
+﻿@model CCD_Attendance.Models.UploadAttendanceViewModel
+@{
+    ViewData["Title"] = "Update Attendance";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="UpdateAttendance" asp-controller="Attendance" asp-area="Admin" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label asp-for="File">Attendance File</label>
+        <input asp-for="File" class="form-control" type="file" required />
+        <span asp-validation-for="File" class="text-danger"></span>
+    </div>
+    <div>
+        <p>Provide a CSV file for Handshake data in the correct format.</p>
+    </div>
+    <input asp-for="EventId" type="hidden" />
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+
+@section Scripts {
+    <script>
+        // You can add JavaScript here for form validation or other interactive elements specific to updating
+    </script>
+}
